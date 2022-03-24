@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: dev
     container_name: app-php
     volumes:
       - ./src:/var/www/html

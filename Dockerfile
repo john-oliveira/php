@@ -1,6 +1,5 @@
-FROM php:8.1.3-fpm-alpine
+FROM php:8.1.3-fpm-alpine AS dev
 WORKDIR /var/www/html
-COPY src .
 
 RUN apk add --no-cache $PHPIZE_DEPS \
     && pecl install xdebug-3.1.3 \
@@ -9,3 +8,7 @@ RUN apk add --no-cache $PHPIZE_DEPS \
 RUN echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_host = host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+FROM php:8.1.3-fpm-alpine AS prod
+WORKDIR /var/www/html
+COPY src .
