@@ -23,7 +23,11 @@ setcookie("produto", "TV Panasonic", $date->getTimestamp() + 60);
         echo '<p><b>Produto:</b> ' . $_COOKIE['produto'] . '</p>';
     }
 
-    phpinfo();
+    require_once 'model/caneta.php';
+
+    $caneta = new App\Model\Caneta("azul");
+
+    echo 'Caneta ' . $caneta->getCor();
 
     ?>
 </body>
