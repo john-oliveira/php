@@ -10,7 +10,8 @@
             "request": "launch",
             "port": 9003,
             "pathMappings": {
-                "/var/www/html": "${workspaceFolder}/src"
+                "/var/www/html/src": "${workspaceFolder}/src",
+                "/var/www/html/vendor": "${workspaceFolder}/vendor"
             }
         }
     ]
