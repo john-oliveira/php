@@ -1,35 +1,36 @@
 <?php
 
-$date = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
-setcookie("produto", "TV Panasonic", $date->getTimestamp() + 60);
+require_once '../../vendor/autoload.php';
 
-?>
-<!DOCTYPE html>
-<html lang="en">
+$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
+    $r->addRoute('GET', '/', App\Controller\Home::class . '/render');
+    $r->addRoute('GET', '/product', App\Controller\Product::class . '/list');
+    $r->addRoute('GET', '/product/{id:\d+}', App\Controller\Product::class . '/view');
+});
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+// Fetch method and URI from somewhere
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri = $_SERVER['REQUEST_URI'];
 
-<body>
-    <h1>Hello World!</h1>
-    <?php
+// Strip query string (?foo=bar) and decode URI
+if (false !== $pos = strpos($uri, '?')) {
+    $uri = substr($uri, 0, $pos);
+}
+$uri = rawurldecode($uri);
 
-    if (isset($_COOKIE['produto'])) {
-
-        echo '<p><b>Produto:</b> ' . $_COOKIE['produto'] . '</p>';
-    }
-
-    require_once '../../vendor/autoload.php';
-
-    $caneta = new App\Model\Caneta("azul");
-
-    echo 'Caneta ' . $caneta->getCor();
-
-    ?>
-</body>
-
-</html>
+$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+switch ($routeInfo[0]) {
+    case FastRoute\Dispatcher::NOT_FOUND:
+        echo '... 404 Not Found';
+        break;
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        $allowedMethods = $routeInfo[1];
+        echo '... 405 Method Not Allowed';
+        break;
+    case FastRoute\Dispatcher::FOUND:
+        $handler = $routeInfo[1];
+        $vars = $routeInfo[2];
+        list($class, $method) = explode("/", $handler, 2);
+        call_user_func_array(array(new $class, $method), $vars);
+        break;
+}
