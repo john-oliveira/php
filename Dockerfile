@@ -14,7 +14,8 @@ RUN composer install
 RUN apk add --no-cache $PHPIZE_DEPS \
     && pecl install xdebug-3.1.3 \
     && docker-php-ext-enable xdebug
-
+    
+#To debug you need to add entry in the hosts file, por exemplo: 192.168.1.9 host.docker.internal
 RUN echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_host = host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
